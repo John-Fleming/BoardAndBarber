@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace BoardAndBarber.Data
 {
@@ -168,9 +169,13 @@ namespace BoardAndBarber.Data
     // Dapper example 
     public class CustomerRepository
     {
-        static List<Customer> _customers = new List<Customer>();
+        readonly string _connectionString;
+        public CustomerRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("BoardAndBarber");
+        }
 
-        const string _connectionString = "Server = localhost; Database = BoardAndBarber; Trusted_Connection = True;";
+        //const string _connectionString = "Server = localhost; Database = BoardAndBarber; Trusted_Connection = True;";
 
         public void Add(Customer customerToAdd)
         {

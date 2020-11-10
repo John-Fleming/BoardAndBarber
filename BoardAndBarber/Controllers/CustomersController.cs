@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BoardAndBarber.Data;
 using BoardAndBarber.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,17 @@ namespace BoardAndBarber.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
+        CustomerRepository _repo;
+        public CustomersController(CustomerRepository repo)
+        {
+            _repo = repo;
+        }
+
         [HttpPost]
+        [Authorize]
         public IActionResult CreateCustomer(Customer customer)
         {
-            var repo = new CustomerRepository();
-            repo.Add(customer);
+            _repo.Add(customer);
 
             return Created($"/ api / customers /{ customer.Id}", customer);
         }
@@ -25,8 +32,7 @@ namespace BoardAndBarber.Controllers
         [HttpGet]
         public IActionResult GetAllCustomers() 
         {
-            var repo = new CustomerRepository();
-            var allCustomers = repo.GetAll();
+            var allCustomers = _repo.GetAll();
 
             return Ok(allCustomers);
         }
@@ -34,8 +40,7 @@ namespace BoardAndBarber.Controllers
         [HttpGet("{id}")]
         public IActionResult GetCustomerById(int id)
         {
-            var repo = new CustomerRepository();
-            var customer = repo.GetById(id);
+            var customer = _repo.GetById(id);
 
             if (customer == null) return NotFound("No Customer with that ID was found");
 
@@ -45,8 +50,7 @@ namespace BoardAndBarber.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateCustomer(int id, Customer customer)
         {
-            var repo = new CustomerRepository();
-            var updatedCustomer = repo.Update(id, customer);
+            var updatedCustomer = _repo.Update(id, customer);
 
             return Ok(updatedCustomer);
         }
@@ -55,13 +59,12 @@ namespace BoardAndBarber.Controllers
         public IActionResult DeleteCustomer(int id)
         {
 
-            var repo = new CustomerRepository();
-            if (repo.GetById(id) == null)
+            if (_repo.GetById(id) == null)
             {
                 NotFound();
             }
 
-            repo.Remove(id);
+            _repo.Remove(id);
 
             return Ok();
         }
