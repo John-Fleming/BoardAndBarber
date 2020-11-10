@@ -7,4 +7,4 @@ const getAllCustomers = () => new Promise((resolve,reject) => {
         .catch(error => reject(error));
 });
 
-export default {getAllCustomers};
+export default {getAllCustomers}; // eslint-disable-line
